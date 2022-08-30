@@ -16,5 +16,22 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.19"
-  }
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "name": "36-2nd-wenb-backend",
+  "version": "1.0.0",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wecode-bootcamp-korea/36-2nd-WeNB-backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wecode-bootcamp-korea/36-2nd-WeNB-backend/issues"
+  },
+  "homepage": "https://github.com/wecode-bootcamp-korea/36-2nd-WeNB-backend#readme",
+  "description": ""
 }
