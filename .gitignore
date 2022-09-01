@@ -4,3 +4,7 @@ db/schema.sql
 .vscode
 .DS_Store
 src/logs/error
+src/logs/info
+coverage
+.env.test
+lab.js

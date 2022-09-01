@@ -15,6 +15,28 @@
     "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.19"
-  }
+    "i": "^0.3.7",
+    "nodemon": "^2.0.19",
+    "npm": "^8.18.0",
+    "supertest": "^6.2.4"
+  },
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "DOTENV_CONFIG_PATH=.env.test jest --setupFiles=dotenv/config"
+  },
+  "name": "project_wenb",
+  "version": "1.0.0",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wecode-bootcamp-korea/36-2nd-WeNB-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wecode-bootcamp-korea/36-2nd-WeNB-backend/issues"
+  },
+  "homepage": "https://github.com/wecode-bootcamp-korea/36-2nd-WeNB-backend#readme",
+  "description": ""
 }

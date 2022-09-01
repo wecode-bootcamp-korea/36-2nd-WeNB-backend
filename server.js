@@ -21,7 +21,7 @@ const startServer = async ()=>{
            logger.info(`listening on PORT : ${PORT}`)
         });
         } catch(err){
-        logger.error(err)
+           logger.error(err)
         }
 }
 startServer();
