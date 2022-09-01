@@ -27,7 +27,6 @@
     "test": "DOTENV_CONFIG_PATH=.env.test jest --setupFiles=dotenv/config"
   },
   "name": "36-2nd-wenb-backend",
-
   "version": "1.0.0",
   "main": "app.js",
   "repository": {
