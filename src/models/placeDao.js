@@ -14,13 +14,14 @@ const getPlaces = async (limit, offset) => {
                 i.image_url
             ) AS image_urls
         FROM places p
-        JOIN images i
+        INNER JOIN images i
         ON i.place_id = p.id
         GROUP BY p.id
         ORDER BY p.id
         LIMIT ${limit}
         OFFSET ${offset}
         `);
+
 
     const rates = await appDataSource.query(
         `SELECT
