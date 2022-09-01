@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const reservationController = require("../controllers/reservationController")
-const errorhandler = require("../middlewares/errorhandler")
+const errorHandler = require("../utils/errorHandler")
+const jwt = require("../utils/jwt")
 
 
-router.post("/reservation", errorhandler(reservationController.getReservation))
+router.post("/reservation", errorHandler.errorHandlerAsync(reservationController.getReservation))
 
 module.exports = {
     router
