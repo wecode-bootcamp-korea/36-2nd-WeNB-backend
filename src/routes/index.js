@@ -11,5 +11,7 @@ router.use("/kakao", userRouter.router);
 
 const reservationRouter = require('./reservationRouter');
 router.use("/place", reservationRouter.router)
+const hostRouter = require("./hostRouter")
+router.use('/host', hostRouter.router)
 
 module.exports = router;

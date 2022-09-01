@@ -1,9 +1,7 @@
-const { BaseError } = require("../utils/baseError");
 const { appDataSource } = require("./datasource");
-const BaseError = require('../utils/baseError')
+
 
 const getReservation = async (userId, placeId, availableFrom, availableUntil, guestNumber, totalPrice) => {
-    try {
         return await appDataSource.query(
             `
             INSERT INTO bookings(
@@ -17,13 +15,9 @@ const getReservation = async (userId, placeId, availableFrom, availableUntil, gu
             `,
             [userId, placeId, availableFrom, availableUntil, guestNumber, totalPrice]
         )
-    } catch (err){
-        throw new BaseError("put the value right", 500)
-    }
 }
 
 const getMaxCapacityAndDaysAndPriceAvailableFromAndAvailableUntil = async(placeId) => {
-    try {
         return await appDataSource.query(
             `
             SELECT 
@@ -37,9 +31,6 @@ const getMaxCapacityAndDaysAndPriceAvailableFromAndAvailableUntil = async(placeI
             `,
             [placeId]
         )
-    } catch (err) {
-        throw new BaseError("put the value right", 500)
-    }
 }
 module.exports = {
     getReservation,

@@ -2,7 +2,7 @@ const { logger } = require("../logs/config/winston");
 
 const errorHandlerSync = (err, req, res, next) => {
     logger.error(err.stack)
-    err.statusCode = err.statusCode || 500;
+    err.statusCode = err.statusCode || 400;
     res.status(err.statusCode).json({ message: err.message })
 }
 
@@ -12,7 +12,7 @@ const errorHandlerAsync = (func)=>{
         await func(req,res)
     }catch(err){
         logger.error(err.stack)
-        res.status(err.statusCode || 500).json({message: err.message})
+        res.status(err.statusCode || 400).json({message: err.message})
     }
     }
 }
