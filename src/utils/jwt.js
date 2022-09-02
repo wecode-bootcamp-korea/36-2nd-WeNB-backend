@@ -1,28 +1,27 @@
 const jwt = require("jsonwebtoken");
 const { logger } = require("../logs/config/winston");
-const errorHandler = require("./baseError");
+const { BaseError } = require("./baseError");
 require("dotenv").config();
 
 /** payLoad : { name : ?, exp: ?, iss: ? } */
 const makeToken = (payLoad)=>{
-    try{
         const secretKey = process.env.SECRET_KEY;
         const exp = process.env.EXP
-        const result = jwt.sign(payLoad,secretKey,{expiresIn: exp, issuer: 'WeNV'});
-        logger.info(`makeToken: ${result !== undefined}`);
+        const result = jwt.sign(payLoad,secretKey,{expiresIn: exp, issuer: 'WeNB'});
+        if(!result){
+            throw new BaseError("validationError",500 ,"token problem")
+        }
         return result;
-    }catch(err){
-        throw new errorHandler.BaseError('BAD_REQUEST', 400, err.message)
-    }
 }    
 /** token exp : 15m */
 const validation = (req, res, next)=>{
     try{
         const secretKey = process.env.SECRET_KEY;
         const result = jwt.verify(req.headers.authorization, secretKey);
+        const {kakao_id, username} = result;
         logger.info(`validation: ${result.username !== undefined}`)
         if(result){
-            req.body.name = result.name;
+            req.body = {kakao_id, username}
             next();
         }
         

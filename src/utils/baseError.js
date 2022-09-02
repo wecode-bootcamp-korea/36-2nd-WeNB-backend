@@ -1,9 +1,10 @@
 class BaseError extends Error {
-	constructor(name, httpStatusCode, description) {
-		super(description);
+	constructor(name,httpStatusCode, message) {
+		super(message);
 
 		this.name = name;
-		this.httpCode = httpStatusCode;
+		this.statusCode = httpStatusCode;
+		this.date = new Date();
 
 		Error.captureStackTrace(this);
 	}

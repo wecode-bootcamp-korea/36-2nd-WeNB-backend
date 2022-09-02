@@ -15,7 +15,7 @@ describe('GET/places', () => {
         await appDataSource.destroy();
     });
 
-    test("SUCCESS: prints out 1 place information", async () => {
+    test.skip("SUCCESS: prints out 1 place information", async () => {
         await request(app)
                 .get('/places')
                 .query({ 
