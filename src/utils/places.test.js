@@ -1,4 +1,3 @@
-const { JsonWebTokenError } = require("jsonwebtoken");
 const request = require("supertest");
 
 const { createApp } = require('../../app');

@@ -43,7 +43,11 @@ const getPlaces = async (limit, offset) => {
     });
 
     places.map((obj) => {
-        obj.averate_rate = rates[places.indexOf(obj)].average_rate;
+        if (!rates[places.indexOf(obj)]) {
+            obj.average_rate = 0;
+        } else {
+            obj.average_rate = rates[places.indexOf(obj)].average_rate;
+        }
     });
 
     return places;
