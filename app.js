@@ -3,6 +3,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const routes = require("./src/routes");
 const { logger } = require("./src/logs/config/winston");
+const {errorHandlerSync} = require("./src/utils/errorHandler")
 
 
 const createApp = ()=>{
@@ -15,6 +16,7 @@ const createApp = ()=>{
         next();
     })
     app.use(routes);
+    app.use(errorHandlerSync)
     return app;
 }
 

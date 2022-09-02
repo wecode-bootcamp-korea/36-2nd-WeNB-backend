@@ -8,3 +8,5 @@ src/logs/info
 coverage
 .env.test
 lab.js
+index.html
+jest.config.js
