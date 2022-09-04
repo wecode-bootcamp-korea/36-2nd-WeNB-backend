@@ -2,7 +2,6 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const { createApp } = require("./app");
-
 const { logger } = require("./src/logs/config/winston");
 const { appDataSource } = require("./src/models/datasource");
 
@@ -20,6 +19,7 @@ const startServer = async ()=>{
           console.error("Error occurred during Data Source initialization", err);
           appDataSource.destroy();
         });
+
         app.get("/ping", (req,res,next)=>{
             logger.info('GET /ping');
             res.status(200).json({message : "pong"});
