@@ -26,19 +26,54 @@ describe('GET/places', () => {
                 .expect(
                     [
                         {
-                            "id": 1,
-                            "name": "alpha house",
-                            "price": "1234567890.12",
-                            "latitude": "123.1234567",
-                            "longitude": "1234.1234567",
-                            "available_from": "2011-09-12T02:23:34.000Z",
-                            "available_until": "2011-12-12T03:00:00.000Z",
+                            "id": 115,
+                            "name": "xilkl",
+                            "price": "124058.00",
+                            "latitude": "37.5000000",
+                            "longitude": "127.0500000",
+                            "available_from": "2021-12-31T15:00:00.000Z",
+                            "available_until": "2022-12-31T02:59:59.000Z",
                             "image_urls": [
-                                "https://drive.google.com/uc?id=12JWyEmA7GfIjkXwQi0GMkczPc0hdFuL7"
+                                "https://wenb-bucket.s3.us-west-2.amazonaws.com/hotel8.jpg"
                             ],
-                            "average_rate": 2.1
+                            "average_rate": 1
                         }
                     ]
                 );
     });
+
+    test("FAIL: If there were no more place to load, an empty array is returned", async () => {
+        await request(app)
+                .get('/places')
+                .query({
+                    limit: 30,
+                    offset: 220
+                })
+                .expect(200)
+                .expect([]);
+    });
+
+
+
+    
+    test("SUCCESS: returns information about the called place, review, and ametnities it has", async () => {
+        const id = 180;
+        
+        const response = await request(app)
+                .get(`/places/${id}`)
+                .expect(200);
+
+        expect(response._body[0].id).toEqual(id);
+        expect(response._body[0].reviews.length).toEqual(5);
+        expect(response._body[0].amenities.length).toEqual(6);
+    });
+
+    test("FAIL: returns empty array if there is no place with requested id", async () => {
+        const id = 100000;
+
+        await request(app)
+                .get(`/places/${id}`)
+                .expect(200)
+                .expect([]);
+    })
 });

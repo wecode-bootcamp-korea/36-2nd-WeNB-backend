@@ -14,6 +14,24 @@ const getPlaces = async (req, res) => {
     }
 };
 
+const getPlaceByPlaceId = async (req, res) => {
+    try {
+        const { place_id } = req.params;
+
+        if (!place_id) {
+            return res.status(400).json({message: 'KEY_ERROR'});
+        }
+
+        const getPlaceByPlaceId = await placeService.getPlaceByPlaceId(place_id);
+
+        return res.status(200).json(getPlaceByPlaceId);
+    } catch (err) {
+        err.statusCode = err.statusCode || 500;
+        res.status(err.statusCode).json({ message: err.message });
+    }
+};
+
 module.exports = {
-    getPlaces
+    getPlaces,
+    getPlaceByPlaceId
 }
