@@ -26,10 +26,10 @@ const startServer = async ()=>{
         })
 
         app.listen(PORT, ()=>{
-           logger.info(`listening on PORT : ${PORT}`)
+        logger.info(`listening on PORT : ${PORT}`)
         });
         } catch(err){
-           logger.error(err)
+            logger.error(err)
         }
 }
 startServer();

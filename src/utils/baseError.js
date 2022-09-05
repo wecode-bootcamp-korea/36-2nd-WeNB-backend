@@ -10,6 +10,6 @@ class BaseError extends Error {
 	}
 }
 
-module.exports ={
+module.exports = {
     BaseError
 }
