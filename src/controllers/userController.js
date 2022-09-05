@@ -6,7 +6,7 @@ const kakaoCode = async (req, res)=>{
         const {code} = req.query;
         const rawData = await userService.kakaoToken(code)
         const ourToken = await userService.getOurToken(rawData)
-        res.status(200).send({message : "success", token : ourToken})
+        return res.status(200).send({message : "success", token : ourToken})
     }else{
         throw new BaseError("validation",400,"no_kakaocode")
     }   
@@ -15,9 +15,15 @@ const kakaoCode = async (req, res)=>{
 const logOut = async (req,res)=>{
     const ourToken = req.headers.authorization;
     const expiredId = await userService.logOutKaKao(ourToken);
-    res.status(200).send({message: "success", userId: expiredId}) 
+    return res.status(200).send({message: "success", userId: expiredId}) 
+}
+
+const re = async (req, res)=>{
+    const payLoad = req.body
+    const newToken = await userService.newToken(payLoad)
+    return res.status(200).send({message: "success", token : newToken})
 }
 
 module.exports = {
-    kakaoCode, logOut
+    kakaoCode, logOut, re
 }

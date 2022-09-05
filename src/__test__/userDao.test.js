@@ -42,4 +42,10 @@ describe("userDao unitTest: 1.signup 2.isNew", ()=>{
         expect(ok).not.toBe(0)
     })
 
+    test("getUserId", async()=>{
+        userDaoFakeReturn(1)
+        const ok = await userDao.getUserId(100);
+        expect(ok).toBe(1)
+    })
+
 })

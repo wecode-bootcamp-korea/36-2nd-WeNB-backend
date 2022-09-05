@@ -6,6 +6,7 @@ const errorHandler = require("../utils/errorHandler");
 
 router.get("/auth", errorHandler.errorHandlerAsync(userController.kakaoCode));
 router.post("/logout", jwt.validation ,errorHandler.errorHandlerAsync(userController.logOut));
+router.post("/re", jwt.validation, errorHandler.errorHandlerAsync(userController.re))
 
 module.exports = {
     router
