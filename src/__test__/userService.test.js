@@ -3,7 +3,7 @@ require("dotenv").config();
 const userService = require("../services/userService");
 const axios = require("axios");
 const jwt = require("../utils/jwt");
-const jwt2 = require("jsonwebtoken")
+const jwt2 = require("jsonwebtoken");
 const { appDataSource } = require("../models/datasource");
 
 jest.mock('axios');
@@ -32,22 +32,21 @@ const sample = {
     kakao_account: {
       profile_nickname_needs_agreement: false,
       profile: { nickname: '라이언' }
-    }
+    },
+    user_id: 1
   }
 
 
 describe("getOurToken:", ()=>{
         
     test("success", async()=>{
-        const mockFn = jest.fn()
+        
         const mockRowData = jest.fn().mockReturnValueOnce({data: sample})
         appDataSource.query = jest.fn().mockReturnValueOnce([{x : "0"}]);
-        mockFn.mockReturnValueOnce(100)
-        accessToken = mockFn();
         axios.mockResolvedValue({data : sample});
-        isNew = mockFn();
         const temp = await userService.getOurToken(mockRowData())
         expect(temp).toBe(jwt.makeToken(sample));
+        
     })
 })
 

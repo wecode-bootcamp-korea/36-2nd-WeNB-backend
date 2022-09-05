@@ -18,10 +18,10 @@ const validation = (req, res, next)=>{
     try{
         const secretKey = process.env.SECRET_KEY;
         const result = jwt.verify(req.headers.authorization, secretKey);
-        const {kakao_id, username} = result;
+        const {kakao_id, username, user_id} = result;
         logger.info(`validation: ${result.username !== undefined}`)
         if(result){
-            req.body = {kakao_id, username}
+            req.body = {kakao_id, username, user_id}
             next();
         }
         

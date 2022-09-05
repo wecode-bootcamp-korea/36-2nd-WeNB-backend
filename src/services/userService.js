@@ -62,6 +62,11 @@ const logOutKaKao = async (ourToken)=>{
         return (expiredId.data.id)
 }
 
+const newToken = async(payLoad)=>{
+    const token = jwt.makeToken(payLoad)
+    return token
+}
+
 module.exports = {
-    kakaoToken,getOurToken,logOutKaKao
+    kakaoToken,getOurToken,logOutKaKao,newToken
 }
