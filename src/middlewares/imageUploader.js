@@ -17,7 +17,7 @@ const imageUploader = multer({
     storage: multers3({
         s3: s3,
         bucket: 'wenb-s3',
-        acl: 'public-read-write',
+        acl: 'public-read',
         key: (req, file, cb) => {
             const directory = req.query.directory ?? ''
             const extension = path.extname(file.originalname)

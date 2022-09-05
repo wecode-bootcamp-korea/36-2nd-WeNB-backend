@@ -9,4 +9,7 @@ router.use("/api", imageUploaderRouter.router);
 router.use('/places', placeRouter.router);
 router.use("/kakao", userRouter.router);
 
+const reservationRouter = require('./reservationRouter');
+router.use("/place", reservationRouter.router)
+
 module.exports = router;

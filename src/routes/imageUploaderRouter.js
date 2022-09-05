@@ -3,8 +3,9 @@ const router = express.Router();
 
 const {imageUploader} = require("../middlewares/imageUploader")
 
-router.post('/test', imageUploader.single('image'), (req, res) => {
+router.post('/test', imageUploader.array('images'), (req, res) => {
     try{
+        // console.log(req)
         let payload = {url: req.file.location}
         res.status(200).json({payload})
     } catch (err){
