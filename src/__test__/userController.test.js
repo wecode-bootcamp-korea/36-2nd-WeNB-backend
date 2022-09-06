@@ -1,60 +1,54 @@
-const uesrController = require("../controllers/userController");
-const userService = require("../services/userService");
-const httpMocks = require("node-mocks-http")
-jest.mock("../services/userService")
+const request = require("supertest");
+const { createApp } = require("../app");
+const { AppDataSource } = require("../models/dataSource");
 
-describe("userController unit test", ()=>{
-    
-    test("kakaoCode: success",async()=>{
-        const req = httpMocks.createRequest({
-            method : "get",
-            url: "http://127.0.0.1:3000/kakao/auth",
-            query : {code : "12345"}
-        })
-        const res = httpMocks.createResponse();
-        await uesrController.kakaoCode(req,res).then((res)=>{
-            expect(res.statusCode).toBe(200)
-        })
-    })
+describe("userController unit test", () => {
 
-    test("kakaoCode: fail",async()=>{
-        const req = httpMocks.createRequest({
-            method : "get",
-            url: "http://127.0.0.1:3000/kakao/auth",
-            query : {code : "12345"}
-        })
-        const res = httpMocks.createResponse();
-        try{
-            await uesrController.kakaoCode(req,res)
-        }catch(err){
-            expect(err.statusCode).toBe(400)
-        }
-    })
+		let app;
 
-    test("logOut: success", async()=>{
-        const req = httpMocks.createRequest({
-            method : "post",
-            url : "http://127.0.0.1:3000/kakao/logout",
-            Headers : {Authorization : "ok"}
-        })
-        const res = httpMocks.createResponse();
-        
-        await uesrController.logOut(req,res).then((res)=>{
-            expect(res.statusCode).toBe(200)
-        })
-    })
+		beforeAll(async() => {
 
-    test("logOut: fail",async()=>{
-        const req = httpMocks.createRequest({
-            method : "post",
-            url: "http://127.0.0.1:3000/kakao/auth",
-            Headers : {Authorization : "ok"}
-        })
-        const res = httpMocks.createResponse();
-        try{
-            await uesrController.logOut(req,res)
-        }catch(err){
-            expect(err.statusCode).toBe(400)
-        }
-    })
-})
+			app = createApp()
+			const db = await AppDataSource.initialize()
+
+			db.query(`INSERT INTO users (id, kakaoId, ..) VALUES (id,))`)
+
+		})
+		
+		afterAll(async () => {
+			await AppDataSource.query(`SET FOREIGN_KEY_CHECKS = 0`);
+			await AppDataSource.query(`TRUNCATE users`);
+			await AppDataSource.query(`SET FOREIGN_KEY_CHECKS = 1`);
+			await AppDataSource.destroy();
+		});
+
+	 test("SUCCESS: kakao signin", async () => {
+		 // mocking 2번 필요. 
+			axios.get = jest.fn().mockReturnValue({
+				data: {
+					id: 1010101022,
+					connected_at: "2022-08-30T14:41:02Z",
+					properties: {
+						nickname: "0000",
+					},
+					kakao_account: {
+						profile_nickname_needs_agreement: false,
+						profile: {
+							nickname: "0000",
+						},
+						has_email: true,
+						email_needs_agreement: false,
+						is_email_valid: true,
+						is_email_verified: true,
+						email: "hong@gmail.com",
+					},
+				},
+			});
+
+    await request(app)
+      .post("/auth/signIn")
+      .set({
+        Authorization: "Bearer accessToken",
+      })
+      .expect(200);
+  }); 

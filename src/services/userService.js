@@ -10,41 +10,54 @@ const redirect_uri = process.env.redirect_uri
 const ADMIN_KEY = process.env.REST_API_ADMIN_KEY
 const secretKey = process.env.SECRET_KEY
 
-const kakaoToken = async (code)=>{
-    return await axios({
+const getKakaoToken = async (code)=>{
+    const response = await axios({
         method: "post",
         url : "https://kauth.kakao.com/oauth/token",
+				// timeout: {}
         headers : {"Content-type": "application/x-www-form-urlencoded"},
         data : qs.stringify({"grant_type": "authorization_code", 
-                  "client_id":REST_API_KEY, 
-                    "redirect_uri": redirect_uri, 
-                    "code": code,
-                    "client_secret": "TQOAw1ygO0BPQeoS1oAVEGzn7ZKKoPSU"
-                        })
-        });
+					"client_id":REST_API_KEY, 
+					"redirect_uri": redirect_uri, 
+					"code": code,
+					"client_secret": "TQOAw1ygO0BPQeoS1oAVEGzn7ZKKoPSU"
+				})
+    });
+
+		if (!response.statusCode === 200) throw new Error()
+
+		return response.data
 }
 
-const getOurToken = async (rawData)=>{
-    let userId;
-    const accessToken = rawData.data.access_token;
-    const userInfo = await axios({
+const getKakaoUser = async (accessToken) => {
+    const user = await axios({
         method: "get",
+				// timeout: {}
         url: "https://kapi.kakao.com/v2/user/me",
         headers: {"Authorization": `Bearer ${accessToken}`}
     })
-    const kakao_id = Number(userInfo.data.id);
-    const username = userInfo.data.properties.nickname
-    const isNew = await userDao.isNew(kakao_id)
-    if(Object.values(isNew[0])[0] === '0'){
-        await userDao.signup(kakao_id,username);
-        userId = await userDao.getUserId(kakao_id);
-    }else{
-        userId = await userDao.getUserId(kakao_id);
-    }
-    userInfo.data.user_id = userId[0].id;
-    const ourToken = jwt.makeToken(userInfo.data)
-    return ourToken
-}
+
+		if (!response.statusCode === 200) throw new Error()
+
+		return response.data
+} 
+
+const signInWithKakao = async (authCode) => {
+	const aceessToken = await getKakaoToken(authCode)
+	const kakaoUser   = await getKakaoUser(accessToken)
+
+	const [user, isCreated] = await userDao.getOrCreateUser({
+		kakaoId : KakaoUser.id,
+		userName : KakaoUser.properties.nickname
+	})
+	
+	// 로그인 할 때마 nickname을 업데이트 해주고 싶은 경우.
+	if (!isCreated) await userDao.updateUser(kakaoUser.profileImage)
+
+	const accessToken = jwt.makeToken({id: user.id, ..})
+
+	return accessToken
+} 
 
 const logOutKaKao = async (ourToken)=>{
         const user = jwt2.verify(ourToken, secretKey)

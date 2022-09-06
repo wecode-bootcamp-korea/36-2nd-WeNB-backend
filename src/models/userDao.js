@@ -16,6 +16,39 @@ const signup = async (kakao_id,username)=>{
     return result
 }
 
+const getOrCreateUser = async(kakaoId, nickName) => {
+		let isCreated = false
+
+		const result = await appDataSource.query(`
+			SELECT EXISTS id
+			FROM users
+			WHERE users.kakao_id = "${kakaoId}" 
+		`)
+
+		if (!result.isExist) {
+			await appDataSource.query(`
+				INSERT INTO users (
+						kakao_id,
+						user_type_id,
+						username
+				) VALUES (
+						?,?,?
+				)
+				`,[kakaoId, 1, userName]
+			)
+
+			isCreated = true
+		}
+
+		const result = await appDataSource.query(`
+			SELECT *
+			FROM users
+			WHERE users.kakao_id = "${kakaoId}" 
+		`)
+	
+		return [result.fetchOne(), isCreated]
+}
+
 const isNew = async (kakao_id)=>{
     const result = await appDataSource.query(
         `

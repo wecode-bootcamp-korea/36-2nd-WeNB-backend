@@ -2,14 +2,13 @@ const userService = require("../services/userService");
 const { BaseError } = require("../utils/baseError");
 
 const kakaoCode = async (req, res)=>{
-    if(req.query.code){
-        const {code} = req.query;
-        const rawData = await userService.kakaoToken(code)
-        const ourToken = await userService.getOurToken(rawData)
-        return res.status(200).send({message : "success", token : ourToken})
-    }else{
-        throw new BaseError("validation",400,"no_kakaocode")
-    }   
+		const { authCode } = req.query.code 
+
+		if (!authCode) throw new BaseError("validation",400,"no_kakaocode")
+
+		const accessToken = userService.SignInWithKakao(authCode)
+
+		return res.status(200).send({token : accessToken})
 }
 
 const logOut = async (req,res)=>{
