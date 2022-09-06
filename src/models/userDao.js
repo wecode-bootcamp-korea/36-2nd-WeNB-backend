@@ -1,7 +1,7 @@
-const {appDataSource} = require("./datasource");
+const { database } = require("./datasource");
 
 const signup = async (kakao_id,username)=>{
-    return await appDataSource.query(
+    const result =  await database.query(
     `
     INSERT INTO users (
         kakao_id,
@@ -12,10 +12,12 @@ const signup = async (kakao_id,username)=>{
     )
     `,[kakao_id, 1, username]
     )
+
+		return result.getLastInsertedId()
 }
 
 const isNew = async (kakao_id)=>{
-    return await appDataSource.query(
+    const result = await database.query(
         `
         SELECT EXISTS(
             SELECT *
@@ -24,10 +26,12 @@ const isNew = async (kakao_id)=>{
         )
         `
     )
+
+		return result.isExist()
 }
 
 const getUserId = async(kakao_id)=>{
-    return await appDataSource.query(
+    return await database.query(
     `
     SELECT id
     FROM users

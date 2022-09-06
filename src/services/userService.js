@@ -35,7 +35,8 @@ const getOurToken = async (rawData)=>{
     const kakao_id = Number(userInfo.data.id);
     const username = userInfo.data.properties.nickname
     const isNew = await userDao.isNew(kakao_id)
-    if(Object.values(isNew[0])[0] === '0'){
+
+    if(isNew){
         await userDao.signup(kakao_id,username);
         userId = await userDao.getUserId(kakao_id);
     }else{
