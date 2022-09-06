@@ -31,7 +31,47 @@ const getPlaceByPlaceId = async (req, res) => {
     }
 };
 
+
+const postPlace = async (req, res) => {
+    try {
+        const { user_id, name, price, max_capacity, latitude, longitude, available_from, available_until, max_days } = req.body;
+    
+        if (!user_id || !name || !price || !max_capacity || !latitude || !longitude || !available_from || !available_until || !max_days) {
+            return res.status(400).json({message: 'KEY_ERROR'});
+        }
+    
+        const postPlace = await placeService.postPlace(user_id, name, price, max_capacity, latitude, longitude, available_from, available_until, max_days);
+    
+        return res.status(201).json({message: `place with ${postPlace} place_id = Created`, place_id: postPlace});
+    } catch (err) {
+        err.statusCode = err.statusCode || 500;
+        res.status(err.statusCode).json({ message: err.message });
+    }
+};
+
+
+
+const postAmenityBunches = async(req, res) => {
+    try {
+        const { place_id, amenity_ids } = req.body;
+    
+        if (!place_id || !amenity_ids) {
+            return res.status(400).json({ message: 'KEY_ERROR' });
+        }
+    
+        await placeService.postAmenityBunches(place_id, amenity_ids);
+    
+        return res.status(201).json({message: 'amenitiesRegistered'});
+    } catch (err) {
+        err.statusCode = err.statusCode || 500;
+        res.status(err.statusCode).json({ message: err.message });
+    }
+};
+
+
 module.exports = {
     getPlaces,
-    getPlaceByPlaceId
+    getPlaceByPlaceId,
+    postPlace,
+    postAmenityBunches
 }

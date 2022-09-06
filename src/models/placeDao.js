@@ -111,7 +111,83 @@ const getPlaceByPlaceId = async (place_id) => {
     return place;
 };
 
+
+const postPlace = async (user_id, name, price, max_capacity, latitude, longitude, available_from, available_until, max_days) => {
+    const postPlace = await appDataSource.query(
+        `INSERT INTO places(
+            user_id,
+            name,
+            price,
+            max_capacity,
+            latitude,
+            longitude,
+            available_from,
+            available_until,
+            max_days
+        ) VALUES (?,?,?,?,?,?,?,?,?)
+        `,
+        [user_id, name, price, max_capacity, latitude, longitude, available_from, available_until, max_days]
+    );
+
+    return postPlace.insertId;
+};
+
+
+
+const postAmenityBunches = async (place_id, amenity_ids) => {
+    amenity_ids.map(async (e) => {
+        await appDataSource.query(
+            `INSERT INTO amenity_bunches(
+                place_id,
+                amenity_id
+            ) VALUES (?, ?)
+            `,
+            [place_id, e]
+        );
+    });
+};
+
+const getPlaceIds = async () => {
+    const getPlaceIds = await appDataSource.query(
+        `SELECT
+            JSON_ARRAYAGG(
+                p.id
+            ) AS place_ids
+        FROM places p
+        `);
+    
+    return getPlaceIds[0].place_ids;
+};
+
+const hasUserId = async (user_id) => {
+    const hasUserId = await appDataSource.query(
+        `SELECT EXISTS(
+            SELECT *
+            FROM users
+            WHERE users.id = ${user_id}
+        )`
+    );
+
+    return Object.values(hasUserId[0])[0];
+};
+
+const getUserTypeId = async (user_id) => {
+    const getUserTypeId = await appDataSource.query(
+        `SELECT
+            users.user_type_id
+        FROM users
+        WHERE users.id = ${user_id}
+        `);
+
+    return getUserTypeId[0].user_type_id;
+};
+
 module.exports = {
     getPlaces,
-    getPlaceByPlaceId
+    getPlaceByPlaceId,
+    postPlace,
+    postAmenityBunches,
+    getPlaceIds,
+    hasUserId,
+    getUserTypeId
 }
