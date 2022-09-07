@@ -132,7 +132,18 @@ const postPlace = async (user_id, name, price, max_capacity, latitude, longitude
     return postPlace.insertId;
 };
 
-
+const postImages = async (images, place_id) => {
+    images.map(async (e) => {
+        await appDataSource.query(
+            `INSERT INTO images(
+                place_id,
+                image_url
+            ) VALUES (? , ?)
+            `,
+            [place_id, e]
+        );
+    });
+};
 
 const postAmenityBunches = async (place_id, amenity_ids) => {
     amenity_ids.map(async (e) => {
@@ -220,15 +231,103 @@ const postReviews = async (booking_id, place_id, rate, comment) => {
     return postReviews;
 };
 
+const getAmenities = async () => {
+    const getAmenities = await appDataSource.query(
+        `SELECT
+            a.id,
+            a.name,
+            a.icon_image_url
+        FROM amenities a`
+    );
+
+    return getAmenities;
+};
+
+const searchWithPriceRangeAndAmenities = async (minimum_price, maximum_price, amenity_ids) => {
+    const num_amenity_ids = amenity_ids.map((e) => Number(e));
+
+    let product_info;
+
+    if (amenity_ids.length == 0) {
+        product_info = await appDataSource.query(
+            `SELECT 
+                p.id,
+                p.price
+            FROM places p 
+            GROUP BY p.id
+            ORDER BY p.id
+            `
+        )
+    } else {
+        product_info = await appDataSource.query(
+            `SELECT 
+                p.id,
+                p.price, 
+                JSON_ARRAYAGG(
+                    a.name
+                ) AS amenity_names, 
+                JSON_ARRAYAGG(
+                    a.id
+                ) AS amenity_ids
+            FROM places p 
+            JOIN amenity_bunches ab 
+            ON ab.place_id = p.id 
+            JOIN amenities a 
+            ON a.id = ab.amenity_id 
+            WHERE a.id IN (${String(num_amenity_ids)})
+            GROUP BY p.id
+            HAVING COUNT(*) = ${num_amenity_ids.length}
+            ORDER BY p.id
+            `);
+    }
+
+    const products = product_info.filter((obj) => {
+        return (Number(obj.price) > minimum_price && Number(obj.price) < maximum_price);
+    });
+
+    if (products.length == 0) {
+        return products;
+    }
+
+    const product_ids = [];
+    products.map((obj) => {
+        product_ids.push(obj.id);
+    });
+
+    const result = await appDataSource.query(
+        `SELECT
+            p.id,
+            p.name,
+            p.price,
+            p.latitude,
+            p.longitude,
+            p.available_from,
+            p.available_until,
+            JSON_ARRAYAGG(
+                i.image_url
+            ) AS image_urls
+        FROM places p
+        JOIN images i
+        ON i.place_id = p.id
+        WHERE p.id IN (${String(product_ids)})
+        GROUP BY p.id
+        ORDER BY p.id
+        `);
+
+    return result;
+};
+
 module.exports = {
     getPlaces,
     getPlaceByPlaceId,
     postPlace,
+    postImages,
     postAmenityBunches,
     getPlaceIds,
     hasUserId,
     getUserTypeId,
     deletePlaceWithPlaceId,
     getReviewsByPlaceId,
-    postReviews
+    postReviews,
+    searchWithPriceRangeAndAmenities
 }

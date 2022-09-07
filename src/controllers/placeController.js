@@ -49,6 +49,26 @@ const postPlace = async (req, res) => {
     }
 };
 
+const postImages = async (req, res) => {
+    try {
+        const { place_id } = req.body;
+        const images = [];
+        req.files.map((obj) => {
+            images.push(obj.location)
+        });
+    
+        if (!images || !place_id) {
+            return res.status(400).json({message: 'KEY_ERROR'});
+        }
+    
+        await placeService.postImages(images, place_id);
+    
+        return res.status(200).json({message: "imagePosted"});
+    } catch (err) {
+        err.statusCode = err.statusCode || 500;
+        res.status(err.statusCode).json({ message: err.message });
+    }
+};
 
 
 const postAmenityBunches = async(req, res) => {
@@ -120,12 +140,51 @@ const postReviews = async (req, res) => {
     }
 };
 
+
+const getAmenities = async (req, res) => {
+    const getAmenities = await placeService.getAmenities();
+
+    return res.status(200).json(getAmenities);
+}
+
+const searchWithPriceRangeAndAmenities = async (req, res) => {
+    try {
+        const minimum_price = req.query.minimum_price;
+        const maximum_price = req.query.maximum_price;
+        let amenity_ids;
+    
+        if (typeof(req.query.amenity_ids) != 'object') {
+            amenity_ids = [req.query.amenity_ids];
+        } else {
+            amenity_ids = req.query.amenity_ids;
+        }
+    
+        if (amenity_ids[0] == undefined) {
+            amenity_ids = [];
+        }
+
+        if (!minimum_price || !maximum_price || !amenity_ids) {
+            return res.status(400).json({message: 'KEY_ERROR'});
+        }
+    
+        const searchWithPriceRangeAndAmenities = await placeService.searchWithPriceRangeAndAmenities(minimum_price, maximum_price, amenity_ids);
+    
+        return res.status(200).json(searchWithPriceRangeAndAmenities);
+    } catch (err) {
+        err.statusCode = err.statusCode || 500;
+        res.status(err.statusCode).json({ message: err.message });
+    }
+}
+
 module.exports = {
     getPlaces,
     getPlaceByPlaceId,
     postPlace,
+    postImages,
     postAmenityBunches,
     deletePlaceWithPlaceId,
     getReviewsByPlaceId,
-    postReviews
+    postReviews,
+    getAmenities,
+    searchWithPriceRangeAndAmenities
 }
