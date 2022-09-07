@@ -332,3 +332,258 @@ describe("POST/amenity_bunches: ", () => {
                 );        
     });
 });
+
+describe("DELETE/places/:place_id", () => {
+    let app;
+    let token1;
+
+    beforeAll(async () => {
+        app = createApp();
+        await appDataSource.initialize();
+        await appDataSource.query(
+            `INSERT INTO users(
+                kakao_id,
+                username,
+                user_type_id,
+                email,
+                phone
+            ) VALUES (?,?,?,?,?)
+            `,
+            [1, "tester1", 1, "tester2isHost@gmail.com", "010-2222-2222"]
+            );
+
+        await appDataSource.query(
+            `INSERT INTO places(
+                user_id,
+                name,
+                price,
+                max_capacity,
+                latitude,
+                logitude,
+                available_from,
+                available_until,
+                max_days
+            ) VALUES (?)
+            `,
+            [1, "testPlace", 100000.00, 4, 123.1234567, 1234.12345678, "2022-01-01 11:00:00.00", "2022-07-01 17:00:00.00"]
+        );
+
+        token1 = target.makeToken({username : "tester1"});
+    });
+
+    afterAll(async () => {
+        await appDataSource.query(`TRUNCATE users`);
+        await appDataSource.query(`TRUNCATE places`);
+        await appDataSource.query(`TRUNCATE bookings`);
+        await appDataSource.query(`TRUNCATE reviews`);
+        await appDataSource.query(`TRUNCATE images`);
+        await appDataSource.query(`TRUNCATE places`);
+        await appDataSource.query(`TRUNCATE amenities`);
+        await appDataSource.query(`TRUNCATE amenity_bunches`);
+        await appDataSource.destroy();
+    });
+
+    test("SUCCESS: delete place with place_id", async () => {
+        await request(app)
+                .delete("/places")
+                .set({Authorization: token1})
+                .send({
+                    place_id: 180
+                })
+                .expect(200)
+                .expect(
+                    {
+                        message: "place with ID 221 is deleted"
+                    }
+                );
+    });
+
+    test("FAIL: called place_id does not exist", async () => {
+        await request(app)
+                .delete("/places")
+                .set({Authorization: token1})
+                .send({
+                    place_id: 1000000000
+                })
+                .expect(404)
+                .expect(
+                    {
+                        message: "PLACE_DOES_NOT_EXIST"
+                    }
+                );
+    });
+});
+
+describe("Tests related to reviews", () => {
+    let app;
+    let token1;
+    let token2;
+    let token3;
+
+    beforeAll(async () => {
+        app = createApp();
+        await appDataSource.initialize();
+        await appDataSource.query(
+            `INSERT INTO users(
+                kakao_id,
+                username,
+                user_type_id,
+                email,
+                phone
+            ) VALUES (?,?,?,?,?)
+            `,
+            [1, "tester1", 2, "tester1isHost@gmail.com", "010-2222-2222"]
+        );
+
+        await appDataSource.query(
+            `INSERT INTO users(
+                kakao_id,
+                username,
+                user_type_id,
+                email,
+                phone
+            ) VALUES (?,?,?,?,?)
+            `,
+            [2, "tester2", 1, "tester2isHost@gmail.com", "010-4444-4444"]
+        );
+
+        await appDataSource.query(
+            `INSERT INTO users(
+                kakao_id,
+                username,
+                user_type_id,
+                email,
+                phone
+            ) VALUES (?,?,?,?,?)
+            `,
+            [3, "tester3", 1, "tester3isHost@gmail.com", "010-6666-6666"]
+        );
+            
+        await appDataSource.query(
+            `INSERT INTO places(
+                user_id,
+                name,
+                price,
+                max_capacity,
+                latitude,
+                logitude,
+                available_from,
+                available_until,
+                max_days
+            ) VALUES (?)
+            `,
+            [1, "testPlace", 100000.00, 4, 123.1234567, 1234.12345678, "2022-01-01 11:00:00.00", "2022-07-01 17:00:00.00"]
+        );
+
+        await appDataSource.query(
+            `INSERT INTO bookings(
+                user_id,
+                place_id,
+                rent_from,
+                rent_to,
+                guest_number,
+                total_price
+            ) VALUES (?)
+            `,
+            [1, 1, "2022-02-01 11:00:00.00", "2022-02-04 17:00:00.00", 2, 300000.00]
+        );
+
+        await appDataSource.query(
+            `INSERT INTO bookings(
+                user_id,
+                place_id,
+                rent_from,
+                rent_to,
+                guest_number,
+                total_price
+            ) VALUES (?)
+            `,
+            [2, 1, "2022-02-05 11:00:00.00", "2022-02-08 17:00:00.00", 2, 300000.00]
+        );
+
+        await appDataSource.query(
+            `INSERT INTO reviews(
+                booking_id,
+                place_id,
+                rate,
+                comment
+            ) VALUES (?)
+            `,
+            [1, 1, 2.5, "this place is good."]
+        )
+
+        token1 = target.makeToken({username : "tester1"});
+        token2 = target.makeToken({username : "tester2"});
+        token3 = target.makeToken({username : "tester3"})
+    });
+
+    afterAll(async () => {
+        await appDataSource.query(`TRUNCATE users`);
+        await appDataSource.query(`TRUNCATE places`);
+        await appDataSource.query(`TRUNCATE bookings`);
+        await appDataSource.query(`TRUNCATE reviews`);
+        await appDataSource.query(`TRUNCATE images`);
+        await appDataSource.query(`TRUNCATE places`);
+        await appDataSource.query(`TRUNCATE amenities`);
+        await appDataSource.query(`TRUNCATE amenity_bunches`);
+        await appDataSource.destroy();
+    });
+
+    test("SUCCESS: returns existing review", async () => {
+        await request(app)
+                .get("/places/reviews/1")
+                .expect(200)
+                .expect(
+                    [
+                        {
+                            "rate": "2.5",
+                            "comment": "this place is good."
+                        }
+                    ]
+                );
+    });
+
+    test("FAIL: requests for reviews that dose not exist", async () => {
+        await request(app)
+                .get("/places/reviews/99999")
+                .expect(200)
+                .expect(
+                    []
+                );
+    });
+
+    test("SUCCESS: posts review", async () => {
+        await request(app)
+                .post("/places")
+                .set({Authorization: token2})
+                .send({
+                    place_id: 1,
+                    rate: 4.0,
+                    comment: "this place is VERY VERY GOOD, you know?"  
+                })
+                .expect(
+                    {
+                        message: "reviewCreated"
+                    }
+                );
+    });
+
+    test("FAIL: place is wrong", async () => {
+        await request(app)
+                .post("/places")
+                .set({Authorization: token2})
+                .send({
+                    place_id: 1,
+                    rate: 1.2,
+                    comment: "this place is VERY VERY GOOD, you know?"
+                })
+                .expect(500)
+                .expect(
+                    {
+                        message: "Cannot add or update a child row: a foreign key constraint fails (`wenb`.`reviews`, CONSTRAINT `fk_reviews_place_id` FOREIGN KEY (`place_id`) REFERENCES `places` (`id`) ON DELETE CASCADE)"
+                    }
+                );         
+    });
+
+
+})

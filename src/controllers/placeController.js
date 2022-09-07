@@ -69,9 +69,63 @@ const postAmenityBunches = async(req, res) => {
 };
 
 
+const deletePlaceWithPlaceId = async (req, res) => {
+    try {
+        const { place_id } = req.params;
+    
+        if (!place_id) {
+            return res.status(400).json({message: 'KEY_ERROR'});
+        }
+    
+        await placeService.deletePlaceWithPlaceId(place_id);
+    
+        return res.status(200).json({message: `place with ID ${place_id} is deleted`});
+    } catch (err) {
+        err.statusCode = err.statusCode || 500;
+        res.status(err.statusCode).json({ message: err.message });
+    }
+};
+
+const getReviewsByPlaceId = async (req, res) => {
+    try {
+        const { place_id } = req.params;
+    
+        if (!place_id) {
+            return res.status(400).json({message: 'KEY_ERROR'});
+        }
+    
+        const getReviewsByPlaceId = await placeService.getReviewsByPlaceId(place_id);
+    
+        return res.status(200).json(getReviewsByPlaceId);
+    } catch (err) {
+        err.statusCode = err.statusCode || 500;
+        res.status(err.statusCode).json({ message: err.message });
+    }
+};
+
+const postReviews = async (req, res) => {
+    try {
+        const { booking_id, place_id, rate, comment } = req.body;
+    
+        if (!booking_id || !place_id || !rate || !comment) {
+            return res.status(400).json({message: 'KEY_ERROR'});
+        }
+    
+        await placeService.postReviews(booking_id, place_id, rate, comment);
+    
+        return res.status(200).json({message: "reviewCreated"});
+    } catch (err) {
+        err.statusCode = err.statusCode || 500;
+        res.status(err.statusCode).json({ message: err.message });
+    }
+};
+
 module.exports = {
     getPlaces,
     getPlaceByPlaceId,
     postPlace,
-    postAmenityBunches
+    postAmenityBunches,
+    deletePlaceWithPlaceId,
+    getReviewsByPlaceId,
+    postReviews
 }

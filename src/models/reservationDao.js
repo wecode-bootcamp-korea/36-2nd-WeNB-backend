@@ -1,6 +1,5 @@
 const { appDataSource } = require("./datasource");
 
-
 const getReservation = async (userId, placeId, availableFrom, availableUntil, guestNumber, totalPrice) => {
         return await appDataSource.query(
             `
