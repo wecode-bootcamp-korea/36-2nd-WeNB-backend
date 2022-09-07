@@ -246,26 +246,40 @@ const getAmenities = async () => {
 const searchWithPriceRangeAndAmenities = async (minimum_price, maximum_price, amenity_ids) => {
     const num_amenity_ids = amenity_ids.map((e) => Number(e));
 
-    const product_info = await appDataSource.query(
-        `SELECT 
-            p.id,
-            p.price, 
-            JSON_ARRAYAGG(
-                a.name
-            ) AS amenity_names, 
-            JSON_ARRAYAGG(
-                a.id
-            ) AS amenity_ids
-        FROM places p 
-        JOIN amenity_bunches ab 
-        ON ab.place_id = p.id 
-        JOIN amenities a 
-        ON a.id = ab.amenity_id 
-        WHERE a.id IN (${String(num_amenity_ids)})
-        GROUP BY p.id
-        HAVING COUNT(*) = ${num_amenity_ids.length}
-        ORDER BY p.id
-        `);
+    let product_info;
+
+    if (amenity_ids.length == 0) {
+        product_info = await appDataSource.query(
+            `SELECT 
+                p.id,
+                p.price
+            FROM places p 
+            GROUP BY p.id
+            ORDER BY p.id
+            `
+        )
+    } else {
+        product_info = await appDataSource.query(
+            `SELECT 
+                p.id,
+                p.price, 
+                JSON_ARRAYAGG(
+                    a.name
+                ) AS amenity_names, 
+                JSON_ARRAYAGG(
+                    a.id
+                ) AS amenity_ids
+            FROM places p 
+            JOIN amenity_bunches ab 
+            ON ab.place_id = p.id 
+            JOIN amenities a 
+            ON a.id = ab.amenity_id 
+            WHERE a.id IN (${String(num_amenity_ids)})
+            GROUP BY p.id
+            HAVING COUNT(*) = ${num_amenity_ids.length}
+            ORDER BY p.id
+            `);
+    }
 
     const products = product_info.filter((obj) => {
         return (Number(obj.price) > minimum_price && Number(obj.price) < maximum_price);
@@ -302,7 +316,6 @@ const searchWithPriceRangeAndAmenities = async (minimum_price, maximum_price, am
 
     return result;
 };
-
 
 module.exports = {
     getPlaces,

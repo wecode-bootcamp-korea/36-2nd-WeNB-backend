@@ -105,18 +105,19 @@ const getAmenities = async () => {
 }
 
 const searchWithPriceRangeAndAmenities = async (minimum_price, maximum_price, amenity_ids) => {
-    if (minimum_price > maximum_price) {
+    const min_price = Number(minimum_price);
+    const max_price = Number(maximum_price);
+
+    if (min_price > max_price) {
         const err = new Error("WRONG_PRICE_RANGE");
         err.statusCode = 404;
         throw err;
     }
 
-    const searchWithPriceRangeAndAmenities = placeDao.searchWithPriceRangeAndAmenities(minimum_price, maximum_price, amenity_ids);
+    const searchWithPriceRangeAndAmenities = placeDao.searchWithPriceRangeAndAmenities(min_price, max_price, amenity_ids);
 
     return searchWithPriceRangeAndAmenities;
-}
-
-
+};
 
 
 module.exports = {
