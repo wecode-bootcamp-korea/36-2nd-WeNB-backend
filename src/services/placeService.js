@@ -59,9 +59,47 @@ const postAmenityBunches = async (place_id, amenity_ids) => {
     return postAmenityBunches;
 };
 
+
+const deletePlaceWithPlaceId = async (place_id) => {
+    const getPlaceIds = await placeDao.getPlaceIds();
+
+    if (!getPlaceIds.includes(Number(place_id))) {
+        const err = new Error("PLACE_DOES_NOT_EXIST");
+        err.statusCode = 404;
+        throw err;
+    }
+
+    const deletePlaceWithPlaceId = await placeDao.deletePlaceWithPlaceId(place_id);
+
+    return deletePlaceWithPlaceId;
+};
+
+const getReviewsByPlaceId = async (place_id) => {
+    const getReviewsByPlaceId = await placeDao.getReviewsByPlaceId(place_id);
+
+    return getReviewsByPlaceId;
+};
+
+const postReviews = async (booking_id, place_id, rate, comment) => {
+    const getBookingIds = await placeDao.getBookingIds();
+
+    if (!getBookingIds.includes(booking_id)) {
+        const err = new Error("DID_NOT_BOOK");
+        err.statusCode = 404;
+        throw err;
+    }
+
+    const postReviews = await placeDao.postReviews(booking_id, place_id, rate, comment);
+
+    return postReviews;
+};
+
 module.exports = {
     getPlaces,
     getPlaceByPlaceId,
     postPlace,
-    postAmenityBunches
+    postAmenityBunches,
+    deletePlaceWithPlaceId,
+    getReviewsByPlaceId,
+    postReviews
 }

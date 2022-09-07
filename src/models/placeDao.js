@@ -182,6 +182,44 @@ const getUserTypeId = async (user_id) => {
     return getUserTypeId[0].user_type_id;
 };
 
+const deletePlaceWithPlaceId = async (place_id) => {
+    const deletePlaceWithPlaceId = await appDataSource.query(
+        `DELETE FROM places p
+        WHERE p.id = ${place_id}
+        `);
+
+    return deletePlaceWithPlaceId;
+};
+
+const getReviewsByPlaceId = async (place_id) => {
+    const getReviewsByPlaceId = await appDataSource.query(
+        `SELECT
+            r.rate,
+            r.comment
+        FROM reviews r
+        JOIN places p
+        ON p.id = r.place_id
+        WHERE p.id = ${place_id}
+        `);
+
+        return getReviewsByPlaceId;
+};
+
+const postReviews = async (booking_id, place_id, rate, comment) => {
+    const postReviews = await appDataSource.query(
+        `INSERT INTO reviews(
+            booking_id,
+            place_id,
+            rate,
+            comment
+        ) VALUES (?, ?, ?, ?)
+        `,
+        [booking_id, place_id, rate, comment]
+    );
+
+    return postReviews;
+};
+
 module.exports = {
     getPlaces,
     getPlaceByPlaceId,
@@ -189,5 +227,8 @@ module.exports = {
     postAmenityBunches,
     getPlaceIds,
     hasUserId,
-    getUserTypeId
+    getUserTypeId,
+    deletePlaceWithPlaceId,
+    getReviewsByPlaceId,
+    postReviews
 }
