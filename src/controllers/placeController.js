@@ -158,7 +158,11 @@ const searchWithPriceRangeAndAmenities = async (req, res) => {
         } else {
             amenity_ids = req.query.amenity_ids;
         }
-        
+            
+        if (amenity_ids[0] == undefined) {
+            amenity_ids = [];
+        }
+
         if (!minimum_price || !maximum_price || !amenity_ids) {
             return res.status(400).json({message: 'KEY_ERROR'});
         }
