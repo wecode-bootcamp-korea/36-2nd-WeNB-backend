@@ -1,8 +1,7 @@
 const getReservationService = require("../services/reservationService")
 const {BaseError} = require('../utils/baseError')
-console.log("reservation")
+
 const getReservation = async (req, res) => {
-	console.log("reservation:", req.body)
     const {user_id, placeId, availableFrom, availableUntil ,guestNumber} = req.body;
     
     if(!user_id || !placeId || !guestNumber || !availableFrom || !availableUntil){
