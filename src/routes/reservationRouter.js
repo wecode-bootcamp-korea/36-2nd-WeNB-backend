@@ -5,7 +5,7 @@ const errorHandler = require("../utils/errorHandler")
 const jwt = require("../utils/jwt")
 
 
-router.post("/reservation", errorHandler.errorHandlerAsync(reservationController.getReservation))
+router.post("/reservation",jwt.validation ,errorHandler.errorHandlerAsync(reservationController.getReservation))
 
 module.exports = {
     router

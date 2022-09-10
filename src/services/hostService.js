@@ -1,8 +1,8 @@
 const hostDao = require("../models/hostDao");
-const BaseError = require("../utils/baseError");
+const {BaseError} = require("../utils/baseError");
 const {validateEmail, validatePhone} = require("../utils/validator");
 
-const getPrivilegesOnTheHost = async (email, phone, userId) => {
+const getPrivilegesOnTheHost = async (email, phone, user_id) => {
     validateEmail(email);
     validatePhone(phone);
     const emailDuplicateCheck = await hostDao.emailCheck(email);
@@ -17,7 +17,7 @@ const getPrivilegesOnTheHost = async (email, phone, userId) => {
     const createHost = await hostDao.createHost(
         email,
         phone,
-        userId
+        user_id
     );
     return createHost
 }

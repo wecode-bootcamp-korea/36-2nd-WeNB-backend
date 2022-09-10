@@ -329,5 +329,6 @@ module.exports = {
     deletePlaceWithPlaceId,
     getReviewsByPlaceId,
     postReviews,
-    searchWithPriceRangeAndAmenities
+    searchWithPriceRangeAndAmenities,
+    getAmenities
 }

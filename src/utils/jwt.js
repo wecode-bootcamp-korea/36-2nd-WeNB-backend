@@ -15,13 +15,15 @@ const makeToken = (payLoad)=>{
 }    
 /** token exp : 15m */
 const validation = (req, res, next)=>{
-    try{
+    try{ 
         const secretKey = process.env.SECRET_KEY;
         const result = jwt.verify(req.headers.authorization, secretKey);
-        const {kakao_id, username, user_id} = result;
+        const id = result.id;
+	const user_id = result.user_id
         logger.info(`validation: ${result.username !== undefined}`)
         if(result){
-            req.body = {kakao_id, username, user_id}
+            req.body.user_id = user_id
+	    req.body.kakao_id = id
             next();
         }
         

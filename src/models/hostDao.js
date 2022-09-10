@@ -26,7 +26,7 @@ const phoneCheck = async(phone)=> {
         );
 }
 
-const createHost = async (email, phone, userId,) => {
+const createHost = async (email, phone, user_id,) => {
         return await appDataSource.query(
         `
         UPDATE users
@@ -34,7 +34,7 @@ const createHost = async (email, phone, userId,) => {
             user_type_id = 2,
             email = '${email}',
             phone = '${phone}'
-        WHERE users.id = ${userId}
+        WHERE users.id = ${user_id}
         `
         )
 }
